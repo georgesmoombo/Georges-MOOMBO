@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+﻿import express, { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
 import path from 'path';
 import fs from 'fs';
@@ -56,7 +56,7 @@ const USERS: BackendUser[] = [
   {
     id: 'user-editor-1',
     email: 'editor@moombo.cd',
-    name: 'Rédacteur Technique',
+    name: 'RÃ©dacteur Technique',
     role: 'EDITOR',
     salt: salt2,
     passwordHash: hashPassword('EditorMoombo2024!', salt2),
@@ -97,7 +97,7 @@ const AUDIT_LOGS: AuditLog[] = [
     action: 'INITIALIZATION',
     resource: 'SECURITY_MODULE',
     status: 'SUCCESS',
-    details: 'Initialisation des modules de sécurité et de contrôle des rôles RBAC.'
+    details: 'Initialisation des modules de sÃ©curitÃ© et de contrÃ´le des rÃ´les RBAC.'
   }
 ];
 
@@ -130,12 +130,12 @@ function authenticateToken(req: Request, res: Response, next: NextFunction) {
   const session = SESSIONS.get(token);
 
   if (!session) {
-    return res.status(401).json({ error: 'UNAUTHENTICATED', message: 'Session invalide ou expirée.' });
+    return res.status(401).json({ error: 'UNAUTHENTICATED', message: 'Session invalide ou expirÃ©e.' });
   }
 
   if (Date.now() > session.expiresAt) {
     SESSIONS.delete(token);
-    return res.status(401).json({ error: 'SESSION_EXPIRED', message: 'Session expirée. Veuillez vous reconnecter.' });
+    return res.status(401).json({ error: 'SESSION_EXPIRED', message: 'Session expirÃ©e. Veuillez vous reconnecter.' });
   }
 
   // Extend active session
@@ -154,10 +154,10 @@ function requireRole(roles: ('ADMIN' | 'EDITOR')[]) {
       return res.status(401).json({ error: 'UNAUTHENTICATED' });
     }
     if (!roles.includes(user.role)) {
-      recordAudit(user.email, user.role, 'UNAUTHORIZED_ACCESS_ATTEMPT', req.path, 'FAILURE', `Tentative d'accès non autorisée par le rôle ${user.role}`);
+      recordAudit(user.email, user.role, 'UNAUTHORIZED_ACCESS_ATTEMPT', req.path, 'FAILURE', `Tentative d'accÃ¨s non autorisÃ©e par le rÃ´le ${user.role}`);
       return res.status(403).json({ 
         error: 'FORBIDDEN', 
-        message: `Accès refusé. Cette action requiert les privilèges : ${roles.join(' ou ')}.` 
+        message: `AccÃ¨s refusÃ©. Cette action requiert les privilÃ¨ges : ${roles.join(' ou ')}.` 
       });
     }
     next();
@@ -185,7 +185,7 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
 
   const hashedAttempt = hashPassword(password, user.salt);
   if (hashedAttempt !== user.passwordHash) {
-    recordAudit(user.email, user.role, 'LOGIN_FAILED', 'AUTH_SERVICE', 'FAILURE', 'Mot de passe erroné', ip);
+    recordAudit(user.email, user.role, 'LOGIN_FAILED', 'AUTH_SERVICE', 'FAILURE', 'Mot de passe erronÃ©', ip);
     return res.status(401).json({ error: 'Identifiants invalides.' });
   }
 
@@ -204,7 +204,7 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
 
   SESSIONS.set(token, session);
 
-  recordAudit(user.email, user.role, 'LOGIN_SUCCESS', 'AUTH_SERVICE', 'SUCCESS', 'Connexion réussie', ip);
+  recordAudit(user.email, user.role, 'LOGIN_SUCCESS', 'AUTH_SERVICE', 'SUCCESS', 'Connexion rÃ©ussie', ip);
 
   res.json({
     success: true,
@@ -242,21 +242,21 @@ app.post('/api/auth/logout', (req: Request, res: Response) => {
     const token = authHeader.split(' ')[1];
     const session = SESSIONS.get(token);
     if (session) {
-      recordAudit(session.email, session.role, 'LOGOUT', 'AUTH_SERVICE', 'SUCCESS', 'Déconnexion manuelle');
+      recordAudit(session.email, session.role, 'LOGOUT', 'AUTH_SERVICE', 'SUCCESS', 'DÃ©connexion manuelle');
       SESSIONS.delete(token);
     }
   }
-  res.json({ success: true, message: 'Déconnexion effectuée avec succès.' });
+  res.json({ success: true, message: 'DÃ©connexion effectuÃ©e avec succÃ¨s.' });
 });
 
 // Forgot Password
 app.post('/api/auth/forgot-password', (req: Request, res: Response) => {
   const { email } = req.body;
-  recordAudit(email || 'anonymous', 'PUBLIC', 'PASSWORD_RESET_REQUESTED', 'AUTH_SERVICE', 'SUCCESS', 'Demande de réinitialisation de mot de passe');
+  recordAudit(email || 'anonymous', 'PUBLIC', 'PASSWORD_RESET_REQUESTED', 'AUTH_SERVICE', 'SUCCESS', 'Demande de rÃ©initialisation de mot de passe');
   // Always respond with success to avoid user enumeration
   res.json({ 
     success: true, 
-    message: 'Si cet email correspond à un compte administrateur, un lien de réinitialisation sécurisé a été transmis.' 
+    message: 'Si cet email correspond Ã  un compte administrateur, un lien de rÃ©initialisation sÃ©curisÃ© a Ã©tÃ© transmis.' 
   });
 });
 
@@ -264,13 +264,13 @@ app.post('/api/auth/forgot-password', (req: Request, res: Response) => {
 app.post('/api/auth/reset-password', (req: Request, res: Response) => {
   const { token, newPassword } = req.body;
   if (!token || !newPassword || newPassword.length < 8) {
-    return res.status(400).json({ error: 'Token invalide ou mot de passe trop court (min. 8 caractères).' });
+    return res.status(400).json({ error: 'Token invalide ou mot de passe trop court (min. 8 caractÃ¨res).' });
   }
 
   // Demo token verification
   res.json({ 
     success: true, 
-    message: 'Mot de passe mis à jour avec succès. Vous pouvez maintenant vous connecter.' 
+    message: 'Mot de passe mis Ã  jour avec succÃ¨s. Vous pouvez maintenant vous connecter.' 
   });
 });
 
@@ -291,7 +291,7 @@ app.post('/api/auth/change-password', authenticateToken, (req: Request, res: Res
 
   // Strict Security Policy
   if (newPassword.length < 8) {
-    return res.status(400).json({ error: 'Le mot de passe doit comporter au moins 8 caractères.' });
+    return res.status(400).json({ error: 'Le mot de passe doit comporter au moins 8 caractÃ¨res.' });
   }
   if (!/[A-Z]/.test(newPassword)) {
     return res.status(400).json({ error: 'Le mot de passe doit comporter au moins une lettre majuscule.' });
@@ -303,7 +303,7 @@ app.post('/api/auth/change-password', authenticateToken, (req: Request, res: Res
     return res.status(400).json({ error: 'Le mot de passe doit comporter au moins un chiffre.' });
   }
   if (!/[!@#$%^&*(),.?":{}|<>_\-]/.test(newPassword)) {
-    return res.status(400).json({ error: 'Le mot de passe doit comporter au moins un caractère spécial (!@#$%...).' });
+    return res.status(400).json({ error: 'Le mot de passe doit comporter au moins un caractÃ¨re spÃ©cial (!@#$%...).' });
   }
 
   const user = USERS.find(u => u.id === session.userId);
@@ -319,7 +319,7 @@ app.post('/api/auth/change-password', authenticateToken, (req: Request, res: Res
   }
 
   if (currentPassword === newPassword) {
-    return res.status(400).json({ error: "Le nouveau mot de passe doit être différent de l'actuel." });
+    return res.status(400).json({ error: "Le nouveau mot de passe doit Ãªtre diffÃ©rent de l'actuel." });
   }
 
   // Generate fresh salt and new hash
@@ -328,11 +328,11 @@ app.post('/api/auth/change-password', authenticateToken, (req: Request, res: Res
   user.passwordHash = hashPassword(newPassword, newSalt);
 
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'PASSWORD_CHANGE_SUCCESS', 'AUTH_SECURITY', 'SUCCESS', 'Mot de passe administrateur modifié avec succès', ip);
+  recordAudit(user.email, user.role, 'PASSWORD_CHANGE_SUCCESS', 'AUTH_SECURITY', 'SUCCESS', 'Mot de passe administrateur modifiÃ© avec succÃ¨s', ip);
 
   res.json({
     success: true,
-    message: 'Votre mot de passe a été modifié et sécurisé avec succès.'
+    message: 'Votre mot de passe a Ã©tÃ© modifiÃ© et sÃ©curisÃ© avec succÃ¨s.'
   });
 });
 
@@ -366,13 +366,13 @@ app.post('/api/auth/change-email', authenticateToken, (req: Request, res: Respon
   }
 
   if (user.email.toLowerCase() === cleanEmail) {
-    return res.status(400).json({ error: 'La nouvelle adresse e-mail doit être différente de l\'adresse actuelle.' });
+    return res.status(400).json({ error: 'La nouvelle adresse e-mail doit Ãªtre diffÃ©rente de l\'adresse actuelle.' });
   }
 
   // Check if another user has this email
   const emailConflict = USERS.some(u => u.id !== user.id && u.email.toLowerCase() === cleanEmail);
   if (emailConflict) {
-    return res.status(400).json({ error: 'Cette adresse e-mail est déjà attribuée à un autre compte.' });
+    return res.status(400).json({ error: 'Cette adresse e-mail est dÃ©jÃ  attribuÃ©e Ã  un autre compte.' });
   }
 
   const oldEmail = user.email;
@@ -389,12 +389,12 @@ app.post('/api/auth/change-email', authenticateToken, (req: Request, res: Respon
   // Save to disk immediately
   saveStoreToDisk();
 
-  recordAudit(cleanEmail, user.role, 'EMAIL_CHANGE_SUCCESS', 'AUTH_SECURITY', 'SUCCESS', `Adresse email modifiée de ${oldEmail} vers ${cleanEmail}`, ip);
+  recordAudit(cleanEmail, user.role, 'EMAIL_CHANGE_SUCCESS', 'AUTH_SECURITY', 'SUCCESS', `Adresse email modifiÃ©e de ${oldEmail} vers ${cleanEmail}`, ip);
 
   res.json({
     success: true,
     newEmail: cleanEmail,
-    message: `Votre adresse e-mail de connexion a été modifiée avec succès en "${cleanEmail}". Utilisez-la pour vous connecter dorénavant.`
+    message: `Votre adresse e-mail de connexion a Ã©tÃ© modifiÃ©e avec succÃ¨s en "${cleanEmail}". Utilisez-la pour vous connecter dorÃ©navant.`
   });
 });
 
@@ -411,11 +411,11 @@ app.post('/api/auth/logout-all-sessions', authenticateToken, (req: Request, res:
     }
   }
 
-  recordAudit(currentSession.email, currentSession.role, 'SESSIONS_TERMINATED', 'SECURITY', 'SUCCESS', `${terminatedCount} autres sessions révoquées.`);
+  recordAudit(currentSession.email, currentSession.role, 'SESSIONS_TERMINATED', 'SECURITY', 'SUCCESS', `${terminatedCount} autres sessions rÃ©voquÃ©es.`);
   res.json({
     success: true,
     terminatedCount,
-    message: `${terminatedCount} session(s) active(s) fermée(s) avec succès.`
+    message: `${terminatedCount} session(s) active(s) fermÃ©e(s) avec succÃ¨s.`
   });
 });
 
@@ -436,26 +436,26 @@ app.post('/api/admin/toggle-2fa', authenticateToken, requireRole(['ADMIN']), (re
   const { enabled } = req.body;
   TWO_FACTOR_ENABLED = !!enabled;
 
-  recordAudit(user.email, user.role, '2FA_STATE_CHANGED', 'SECURITY', 'SUCCESS', `Double facteur (2FA) : ${TWO_FACTOR_ENABLED ? 'Activé' : 'Désactivé'}`);
+  recordAudit(user.email, user.role, '2FA_STATE_CHANGED', 'SECURITY', 'SUCCESS', `Double facteur (2FA) : ${TWO_FACTOR_ENABLED ? 'ActivÃ©' : 'DÃ©sactivÃ©'}`);
   res.json({
     success: true,
     enabled: TWO_FACTOR_ENABLED,
-    message: `L'authentification à double facteur est désormais ${TWO_FACTOR_ENABLED ? 'activée' : 'désactivée'}.`
+    message: `L'authentification Ã  double facteur est dÃ©sormais ${TWO_FACTOR_ENABLED ? 'activÃ©e' : 'dÃ©sactivÃ©e'}.`
   });
 });
 
 // Profile In-Memory Storage
 let PROFILE_DATA = {
   name: "Georges MOOMBO MODEAWI",
-  title: "Développeur Full Stack & Expert en conception du système d'information",
-  bio: "Professionnel passionné par l'architecture logicielle, la modélisation de bases de données, la conception et l'informatisation des processus métiers d'entreprises et la sécurisation des systèmes d'information en République Démocratique du Congo.",
+  title: "DÃ©veloppeur Full Stack & Expert en conception du systÃ¨me d'information",
+  bio: "Professionnel passionnÃ© par l'architecture logicielle, la modÃ©lisation de bases de donnÃ©es, la conception et l'informatisation des processus mÃ©tiers d'entreprises et la sÃ©curisation des systÃ¨mes d'information en RÃ©publique DÃ©mocratique du Congo.",
   contactEmail: "georgesweahmoombo@gmail.com",
   notificationEmail: "georgesweahmoombo@gmail.com",
   whatsapp: "+243829725609",
   phone: "+243829725609",
   address: "Kinshasa, Gombe / Limete",
   city: "Kinshasa",
-  country: "République Démocratique du Congo",
+  country: "RÃ©publique DÃ©mocratique du Congo",
   githubUrl: "https://github.com/georgesmoombo",
   linkedinUrl: "https://linkedin.com/in/georges-moombo",
   facebookUrl: "https://facebook.com/georgesmoombo",
@@ -468,52 +468,52 @@ let PROFILE_DATA = {
 let SERVER_EXPERIENCES = [
   {
     id: 'exp-1',
-    position: 'Lead Développeur & Consultant Systèmes d\'Information',
-    company: 'Cabinet Numérique & Indépendant',
+    position: 'Lead DÃ©veloppeur & Consultant SystÃ¨mes d\'Information',
+    company: 'Cabinet NumÃ©rique & IndÃ©pendant',
     startDate: '2022-01',
     endDate: '',
     isCurrent: true,
-    description: 'Pilotage de la conception et du déploiement d\'architectures logicielles complètes pour entreprises commerciales, industrielles et cabinets de santé à Kinshasa.',
+    description: 'Pilotage de la conception et du dÃ©ploiement d\'architectures logicielles complÃ¨tes pour entreprises commerciales, industrielles et cabinets de santÃ© Ã  Kinshasa.',
     achievements: [
-      'Conception de plus de 15 logiciels métiers opérationnels (gestion de stocks, facturation OHADA, caisses POS tactiles)',
-      'Réduction moyenne de 45% des écarts d\'inventaire dès le premier trimestre chez les grossistes clients',
-      'Mise en place de politiques de sauvegarde automatisée 3-2-1 et zéro perte critique de données',
+      'Conception de plus de 15 logiciels mÃ©tiers opÃ©rationnels (gestion de stocks, facturation OHADA, caisses POS tactiles)',
+      'RÃ©duction moyenne de 45% des Ã©carts d\'inventaire dÃ¨s le premier trimestre chez les grossistes clients',
+      'Mise en place de politiques de sauvegarde automatisÃ©e 3-2-1 et zÃ©ro perte critique de donnÃ©es',
     ],
-    skills: ['Conception SI (UML)', 'Architecture SI', 'MySQL Avancé', 'React', 'TypeScript', 'PHP MVC', 'Normes OHADA', 'Cybersécurité'],
-    location: 'Kinshasa, RDC & À distance',
+    skills: ['Conception SI (UML)', 'Architecture SI', 'MySQL AvancÃ©', 'React', 'TypeScript', 'PHP MVC', 'Normes OHADA', 'CybersÃ©curitÃ©'],
+    location: 'Kinshasa, RDC & Ã€ distance',
     order: 1,
   },
   {
     id: 'exp-2',
-    position: 'Développeur Full Stack & Gestionnaire de Bases de Données',
-    company: 'Sociétés de Conseil & Distribution',
+    position: 'DÃ©veloppeur Full Stack & Gestionnaire de Bases de DonnÃ©es',
+    company: 'SociÃ©tÃ©s de Conseil & Distribution',
     startDate: '2020-03',
     endDate: '2021-12',
     isCurrent: false,
-    description: 'Développement d\'outils de gestion interne, automatisation de la facturation bimonétaire (USD/CDF) et fiabilisation des écritures comptables.',
+    description: 'DÃ©veloppement d\'outils de gestion interne, automatisation de la facturation bimonÃ©taire (USD/CDF) et fiabilisation des Ã©critures comptables.',
     achievements: [
-      'Informatisation complète des registres manuels pour 4 réseaux de distribution partenaires',
-      'Création d\'un système d\'édition de factures normalisées avec suivi automatisé des créances clients',
-      'Optimisation des temps de requête SQL sur des tables de plus de 500 000 lignes',
+      'Informatisation complÃ¨te des registres manuels pour 4 rÃ©seaux de distribution partenaires',
+      'CrÃ©ation d\'un systÃ¨me d\'Ã©dition de factures normalisÃ©es avec suivi automatisÃ© des crÃ©ances clients',
+      'Optimisation des temps de requÃªte SQL sur des tables de plus de 500 000 lignes',
     ],
-    skills: ['PHP', 'MySQL', 'JavaScript', 'Comptabilité OHADA', 'API REST', 'Excel Avancé / VBA'],
+    skills: ['PHP', 'MySQL', 'JavaScript', 'ComptabilitÃ© OHADA', 'API REST', 'Excel AvancÃ© / VBA'],
     location: 'Kinshasa, RDC',
     order: 2,
   },
   {
     id: 'exp-3',
-    position: 'Technicien Support IT & Formateur Bureautique Décisionnelle',
+    position: 'Technicien Support IT & Formateur Bureautique DÃ©cisionnelle',
     company: 'Services Informatiques & Formation Professionnelle',
     startDate: '2019-01',
     endDate: '2020-02',
     isCurrent: false,
-    description: 'Installation et maintenance de parcs informatiques d\'entreprises, configuration de routeurs et switchs LAN, et formation des équipes de gestion.',
+    description: 'Installation et maintenance de parcs informatiques d\'entreprises, configuration de routeurs et switchs LAN, et formation des Ã©quipes de gestion.',
     achievements: [
-      'Plus de 200 interventions matérielles et logicielles réussies avec un taux de satisfaction client de 96%',
-      'Animation de plus de 30 sessions de formation sur Excel avancé et les tableaux croisés dynamiques pour cadres',
-      'Sécurisation des postes de travail contre les ransomwares et menaces de phishing',
+      'Plus de 200 interventions matÃ©rielles et logicielles rÃ©ussies avec un taux de satisfaction client de 96%',
+      'Animation de plus de 30 sessions de formation sur Excel avancÃ© et les tableaux croisÃ©s dynamiques pour cadres',
+      'SÃ©curisation des postes de travail contre les ransomwares et menaces de phishing',
     ],
-    skills: ['Maintenance Matérielle', 'Réseaux LAN', 'Excel TCD / Formules', 'Sécurité des Postes', 'Pédagogie IT'],
+    skills: ['Maintenance MatÃ©rielle', 'RÃ©seaux LAN', 'Excel TCD / Formules', 'SÃ©curitÃ© des Postes', 'PÃ©dagogie IT'],
     location: 'Kinshasa, RDC',
     order: 3,
   },
@@ -527,24 +527,24 @@ let SERVER_CV_SETTINGS = {
   hideEmptySections: true,
   footer: {
     showFooter: true,
-    footerText: 'Curriculum Vitae certifié conforme • Références et attestations professionnelles disponibles sur demande.',
+    footerText: 'Curriculum Vitae certifiÃ© conforme â€¢ RÃ©fÃ©rences et attestations professionnelles disponibles sur demande.',
     professionalName: 'Georges MOOMBO MODEAWI',
-    contactInfoText: 'Tél / WhatsApp : +243 829 725 609  •  Email : georgesweahmoombo@gmail.com',
-    confidentialityNotice: 'Document professionnel confidentiel — Émis sous réserve de droits.',
+    contactInfoText: 'TÃ©l / WhatsApp : +243 829 725 609  â€¢  Email : georgesweahmoombo@gmail.com',
+    confidentialityNotice: 'Document professionnel confidentiel â€” Ã‰mis sous rÃ©serve de droits.',
   },
 };
 
 // Site Footer Settings Storage
 let SERVER_FOOTER_SETTINGS = {
-  copyrightText: 'Tous droits réservés. Conception logicielle & Systèmes d\'information sécurisés.',
+  copyrightText: 'Tous droits rÃ©servÃ©s. Conception logicielle & SystÃ¨mes d\'information sÃ©curisÃ©s.',
   yearMode: 'auto',
   manualYear: new Date().getFullYear(),
   professionalName: 'Georges MOOMBO MODEAWI',
-  shortSlogan: 'Expert en conception du système d\'information & Développeur Full Stack',
+  shortSlogan: 'Expert en conception du systÃ¨me d\'information & DÃ©veloppeur Full Stack',
   showContactInfo: true,
   contactEmail: 'georgesweahmoombo@gmail.com',
   contactPhone: '+243 829 725 609',
-  contactLocation: 'Kinshasa, République Démocratique du Congo',
+  contactLocation: 'Kinshasa, RÃ©publique DÃ©mocratique du Congo',
   socialLinks: {
     github: 'https://github.com/georgesmoombo',
     linkedin: 'https://linkedin.com/in/georges-moombo',
@@ -555,22 +555,22 @@ let SERVER_FOOTER_SETTINGS = {
   },
   navLinks: [
     { label: 'Accueil', href: '#accueil' },
-    { label: 'À propos', href: '#a-propos' },
-    { label: 'Profils & Équipe', href: '#profils' },
+    { label: 'Ã€ propos', href: '#a-propos' },
+    { label: 'Profils & Ã‰quipe', href: '#profils' },
     { label: 'Projets', href: '#projets' },
-    { label: 'Galerie & Réalisations', href: '#galerie' },
+    { label: 'Galerie & RÃ©alisations', href: '#galerie' },
     { label: 'Services', href: '#services' },
     { label: 'Blog technique', href: '#blog' },
     { label: 'Contact', href: '#contact' },
   ],
-  legalNotice: 'Mentions Légales : Portfolio professionnel édité par Georges MOOMBO MODEAWI, Consultant indépendant en conception de systèmes d\'information et technologies logicielles, basé à Kinshasa (République Démocratique du Congo). Hébergement sécurisé avec certificat SSL/TLS valide.',
-  privacyPolicy: 'Politique de Confidentialité : Les informations recueillies via les formulaires de demande de devis et de contact sont strictement destinées au traitement direct de vos requêtes professionnelles. Aucune donnée n\'est transmise à des tiers sans votre consentement préalable.',
-  complementaryText: 'Disponible pour missions de conseil, conception de logiciels de gestion et interventions à Kinshasa et à distance.',
+  legalNotice: 'Mentions LÃ©gales : Portfolio professionnel Ã©ditÃ© par Georges MOOMBO MODEAWI, Consultant indÃ©pendant en conception de systÃ¨mes d\'information et technologies logicielles, basÃ© Ã  Kinshasa (RÃ©publique DÃ©mocratique du Congo). HÃ©bergement sÃ©curisÃ© avec certificat SSL/TLS valide.',
+  privacyPolicy: 'Politique de ConfidentialitÃ© : Les informations recueillies via les formulaires de demande de devis et de contact sont strictement destinÃ©es au traitement direct de vos requÃªtes professionnelles. Aucune donnÃ©e n\'est transmise Ã  des tiers sans votre consentement prÃ©alable.',
+  complementaryText: 'Disponible pour missions de conseil, conception de logiciels de gestion et interventions Ã  Kinshasa et Ã  distance.',
   showBadges: true,
 };
 
 // Persist server data store to disk
-const DATA_FILE_PATH = path.resolve(__dirname, 'public', 'server_data.json');
+const DATA_FILE_PATH = path.resolve(__dirname, 'data', 'server_data.json');
 
 function saveStoreToDisk() {
   try {
@@ -604,13 +604,13 @@ function loadStoreFromDisk() {
         PROFILE_DATA.name = 'Georges MOOMBO MODEAWI';
       }
       if (PROFILE_DATA.title.toLowerCase().includes('informatique de gestion')) {
-        PROFILE_DATA.title = "Développeur Full Stack & Expert en conception du système d'information";
+        PROFILE_DATA.title = "DÃ©veloppeur Full Stack & Expert en conception du systÃ¨me d'information";
       }
       const p1 = SERVER_PROFILES.find(p => p.id === 'prof-1');
       if (p1) {
         if (p1.fullName.includes('MOOMBO MODEAWI Georges')) p1.fullName = 'Georges MOOMBO MODEAWI';
         if (p1.roleTitle.toLowerCase().includes('informatique de gestion')) {
-          p1.roleTitle = "Directeur Technique & Développeur Full Stack Lead";
+          p1.roleTitle = "Directeur Technique & DÃ©veloppeur Full Stack Lead";
         }
       }
       if (parsed.systemSettings) SYSTEM_SETTINGS = { ...SYSTEM_SETTINGS, ...parsed.systemSettings };
@@ -629,7 +629,7 @@ function loadStoreFromDisk() {
           }
         }
       }
-      console.log('[Georges MOOMBO Server] Données persistées chargées avec succès depuis server_data.json');
+      console.log('[Georges MOOMBO Server] DonnÃ©es persistÃ©es chargÃ©es avec succÃ¨s depuis server_data.json');
     }
   } catch (err) {
     console.warn('Impossible de charger server_data.json, utilisation des valeurs initiales:', err);
@@ -694,15 +694,15 @@ app.put('/api/admin/profile', authenticateToken, requireRole(['ADMIN', 'EDITOR']
   }
 
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'PROFILE_UPDATE', 'SETTINGS', 'SUCCESS', 'Informations du profil administrateur mises à jour.');
-  res.json({ success: true, profile: PROFILE_DATA, message: 'Profil enregistré avec succès.' });
+  recordAudit(user.email, user.role, 'PROFILE_UPDATE', 'SETTINGS', 'SUCCESS', 'Informations du profil administrateur mises Ã  jour.');
+  res.json({ success: true, profile: PROFILE_DATA, message: 'Profil enregistrÃ© avec succÃ¨s.' });
 });
 
 // System Settings Storage
 let SYSTEM_SETTINGS = {
   defaultCurrency: 'USD',
   timezone: 'Africa/Kinshasa (GMT+1)',
-  language: 'Français (FR)',
+  language: 'FranÃ§ais (FR)',
   usdToCdfRate: 2850,
   maintenanceMode: false,
   emailNotifications: true,
@@ -718,8 +718,8 @@ app.put('/api/admin/settings', authenticateToken, requireRole(['ADMIN']), (req: 
   // @ts-ignore
   const user = req.user as Session;
   SYSTEM_SETTINGS = { ...SYSTEM_SETTINGS, ...req.body };
-  recordAudit(user.email, user.role, 'SYSTEM_SETTINGS_UPDATE', 'SETTINGS', 'SUCCESS', 'Préférences de la plateforme mises à jour.');
-  res.json({ success: true, settings: SYSTEM_SETTINGS, message: 'Paramètres système appliqués avec succès.' });
+  recordAudit(user.email, user.role, 'SYSTEM_SETTINGS_UPDATE', 'SETTINGS', 'SUCCESS', 'PrÃ©fÃ©rences de la plateforme mises Ã  jour.');
+  res.json({ success: true, settings: SYSTEM_SETTINGS, message: 'ParamÃ¨tres systÃ¨me appliquÃ©s avec succÃ¨s.' });
 });
 
 // ==========================================
@@ -770,7 +770,7 @@ app.post('/api/admin/users', authenticateToken, requireRole(['ADMIN']), (req: Re
   }
 
   if (USERS.some(u => u.email.toLowerCase() === email.trim().toLowerCase())) {
-    return res.status(400).json({ error: 'Un utilisateur avec cet email existe déjà.' });
+    return res.status(400).json({ error: 'Un utilisateur avec cet email existe dÃ©jÃ .' });
   }
 
   const userSalt = crypto.randomBytes(16).toString('hex');
@@ -789,7 +789,7 @@ app.post('/api/admin/users', authenticateToken, requireRole(['ADMIN']), (req: Re
   res.status(201).json({
     success: true,
     user: { id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role },
-    message: 'Utilisateur créé avec succès.'
+    message: 'Utilisateur crÃ©Ã© avec succÃ¨s.'
   });
 });
 
@@ -805,13 +805,13 @@ app.delete('/api/admin/users/:id', authenticateToken, requireRole(['ADMIN']), (r
 
   const idx = USERS.findIndex(u => u.id === id);
   if (idx === -1) {
-    return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+    return res.status(404).json({ error: 'Utilisateur non trouvÃ©.' });
   }
 
   const deleted = USERS.splice(idx, 1)[0];
   recordAudit(admin.email, admin.role, 'USER_DELETED', 'USER_MANAGEMENT', 'WARNING', `Suppression du compte : ${deleted.email}`);
 
-  res.json({ success: true, message: 'Compte utilisateur supprimé.' });
+  res.json({ success: true, message: 'Compte utilisateur supprimÃ©.' });
 });
 
 // Change user role (ADMIN ONLY)
@@ -823,13 +823,13 @@ app.put('/api/admin/users/:id/role', authenticateToken, requireRole(['ADMIN']), 
 
   const user = USERS.find(u => u.id === id);
   if (!user) {
-    return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+    return res.status(404).json({ error: 'Utilisateur non trouvÃ©.' });
   }
 
   user.role = role === 'ADMIN' ? 'ADMIN' : 'EDITOR';
-  recordAudit(admin.email, admin.role, 'USER_ROLE_CHANGED', 'USER_MANAGEMENT', 'SUCCESS', `Rôle mis à jour pour ${user.email} -> ${user.role}`);
+  recordAudit(admin.email, admin.role, 'USER_ROLE_CHANGED', 'USER_MANAGEMENT', 'SUCCESS', `RÃ´le mis Ã  jour pour ${user.email} -> ${user.role}`);
 
-  res.json({ success: true, message: 'Rôle mis à jour avec succès.', user: { id: user.id, email: user.email, role: user.role } });
+  res.json({ success: true, message: 'RÃ´le mis Ã  jour avec succÃ¨s.', user: { id: user.id, email: user.email, role: user.role } });
 });
 
 
@@ -840,12 +840,12 @@ let SERVER_PROFILES = [
   {
     id: 'prof-1',
     fullName: 'Georges MOOMBO MODEAWI',
-    roleTitle: 'Directeur Technique & Développeur Full Stack Lead',
-    shortBio: "Expert en conception du système d'information, Architecture Logicielle d'Entreprise & Cybersécurité à Kinshasa.",
-    biography: "Expert en conception du système d'information et passionné d'innovation numérique, Georges conçoit et déploie des systèmes informatisés robustes pour les entreprises en RDC. Son expertise englobe la gestion de stock automatisée, la facturation conforme aux normes OHADA, les points de vente bimonétaires (USD/CDF) ainsi que la sécurisation des infrastructures serveurs et réseaux.",
+    roleTitle: 'Directeur Technique & DÃ©veloppeur Full Stack Lead',
+    shortBio: "Expert en conception du systÃ¨me d'information, Architecture Logicielle d'Entreprise & CybersÃ©curitÃ© Ã  Kinshasa.",
+    biography: "Expert en conception du systÃ¨me d'information et passionnÃ© d'innovation numÃ©rique, Georges conÃ§oit et dÃ©ploie des systÃ¨mes informatisÃ©s robustes pour les entreprises en RDC. Son expertise englobe la gestion de stock automatisÃ©e, la facturation conforme aux normes OHADA, les points de vente bimonÃ©taires (USD/CDF) ainsi que la sÃ©curisation des infrastructures serveurs et rÃ©seaux.",
     avatarUrl: '/profile_photo.jpg',
     coverUrl: '/cover_photo.jpg',
-    skills: ["Conception du système d'information", 'Bases de Données MySQL', 'PHP & MVC', 'React & TypeScript', 'Comptabilité OHADA', 'Sécurité Systèmes & Réseaux'],
+    skills: ["Conception du systÃ¨me d'information", 'Bases de DonnÃ©es MySQL', 'PHP & MVC', 'React & TypeScript', 'ComptabilitÃ© OHADA', 'SÃ©curitÃ© SystÃ¨mes & RÃ©seaux'],
     socialLinks: {
       github: 'https://github.com/georgesmoombo',
       linkedin: 'https://linkedin.com/in/georges-moombo',
@@ -858,7 +858,7 @@ let SERVER_PROFILES = [
       email: 'georgesweahmoombo@gmail.com',
       phone: '+243 829 725 609',
       whatsapp: '+243829725609',
-      location: 'Kinshasa, République Démocratique du Congo',
+      location: 'Kinshasa, RÃ©publique DÃ©mocratique du Congo',
       showPublicly: true
     },
     isActive: true,
@@ -869,12 +869,12 @@ let SERVER_PROFILES = [
   {
     id: 'prof-2',
     fullName: 'Clarisse KABASELE MATONDO',
-    roleTitle: 'Consultante en Comptabilité Informatisée & Normes OHADA',
-    shortBio: 'Experte en paramétrage ERP, audits de conformité financière et formation des équipes de trésorerie.',
-    biography: 'Avec plus de 6 ans d\'expérience dans le conseil financier et fiscal en Afrique centrale, Clarisse accompagne les directeurs financiers dans l\'informatisation des processus comptables, la gestion des écritures de clôture et l\'optimisation de la fiscalité d\'entreprise.',
+    roleTitle: 'Consultante en ComptabilitÃ© InformatisÃ©e & Normes OHADA',
+    shortBio: 'Experte en paramÃ©trage ERP, audits de conformitÃ© financiÃ¨re et formation des Ã©quipes de trÃ©sorerie.',
+    biography: 'Avec plus de 6 ans d\'expÃ©rience dans le conseil financier et fiscal en Afrique centrale, Clarisse accompagne les directeurs financiers dans l\'informatisation des processus comptables, la gestion des Ã©critures de clÃ´ture et l\'optimisation de la fiscalitÃ© d\'entreprise.',
     avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80',
     coverUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80',
-    skills: ['Comptabilité OHADA', 'ERP Saari / Sage', 'Audit Fiscal RDC', 'Tableaux de Bord Financiers', 'Contrôle Interne'],
+    skills: ['ComptabilitÃ© OHADA', 'ERP Saari / Sage', 'Audit Fiscal RDC', 'Tableaux de Bord Financiers', 'ContrÃ´le Interne'],
     socialLinks: {
       linkedin: 'https://linkedin.com/in/clarisse-kabasele',
       email: 'clarisse.kabasele@consulting.cd'
@@ -892,12 +892,12 @@ let SERVER_PROFILES = [
   {
     id: 'prof-3',
     fullName: 'Patrick TSHIBANGU ILUNGA',
-    roleTitle: 'Ingénieur Systèmes, Réseaux & Sécurité Périmétrique',
-    shortBio: 'Spécialiste en virtualisation, baies de serveurs, protocoles VPN et politiques de sauvegarde 3-2-1.',
-    biography: 'Certifié Cisco et Mikrotik, Patrick prend en charge le déploiement physique des infrastructures réseaux d\'entreprises, le câblage Cat6, la mise en place de tunnels VPN sécurisés et la résilience contre les attaques ransomwares.',
+    roleTitle: 'IngÃ©nieur SystÃ¨mes, RÃ©seaux & SÃ©curitÃ© PÃ©rimÃ©trique',
+    shortBio: 'SpÃ©cialiste en virtualisation, baies de serveurs, protocoles VPN et politiques de sauvegarde 3-2-1.',
+    biography: 'CertifiÃ© Cisco et Mikrotik, Patrick prend en charge le dÃ©ploiement physique des infrastructures rÃ©seaux d\'entreprises, le cÃ¢blage Cat6, la mise en place de tunnels VPN sÃ©curisÃ©s et la rÃ©silience contre les attaques ransomwares.',
     avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
     coverUrl: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1600&q=80',
-    skills: ['MikroTik & Cisco', 'VLAN & VPN IPsec', 'Sauvegarde NAS 3-2-1', 'Linux Server', 'Pare-feu Matériel'],
+    skills: ['MikroTik & Cisco', 'VLAN & VPN IPsec', 'Sauvegarde NAS 3-2-1', 'Linux Server', 'Pare-feu MatÃ©riel'],
     socialLinks: {
       github: 'https://github.com/patrick-tshibangu',
       linkedin: 'https://linkedin.com/in/patrick-tshibangu'
@@ -949,9 +949,9 @@ app.post('/api/admin/profiles', authenticateToken, requireRole(['ADMIN', 'EDITOR
   };
 
   SERVER_PROFILES.push(newProfile);
-  recordAudit(user.email, user.role, 'PROFILE_CREATED', 'PROFILES', 'SUCCESS', `Nouveau profil ajouté : ${newProfile.fullName}`);
+  recordAudit(user.email, user.role, 'PROFILE_CREATED', 'PROFILES', 'SUCCESS', `Nouveau profil ajoutÃ© : ${newProfile.fullName}`);
 
-  res.status(201).json({ success: true, profile: newProfile, message: 'Profil créé avec succès.' });
+  res.status(201).json({ success: true, profile: newProfile, message: 'Profil crÃ©Ã© avec succÃ¨s.' });
 });
 
 // Admin upload profile photo or cover photo
@@ -961,15 +961,15 @@ app.post('/api/admin/upload-profile-photo', authenticateToken, requireRole(['ADM
   const { profileId, type, dataUrl } = req.body;
 
   if (!profileId || !type || !dataUrl) {
-    return res.status(400).json({ error: 'Paramètres manquants (profileId, type, dataUrl).' });
+    return res.status(400).json({ error: 'ParamÃ¨tres manquants (profileId, type, dataUrl).' });
   }
 
   if (type !== 'avatar' && type !== 'cover') {
-    return res.status(400).json({ error: 'Type invalide (doit être avatar ou cover).' });
+    return res.status(400).json({ error: 'Type invalide (doit Ãªtre avatar ou cover).' });
   }
 
   if (!dataUrl.startsWith('data:image/')) {
-    return res.status(400).json({ error: 'Format d\'image invalide (doit être JPG, PNG ou WebP).' });
+    return res.status(400).json({ error: 'Format d\'image invalide (doit Ãªtre JPG, PNG ou WebP).' });
   }
 
   try {
@@ -1016,7 +1016,7 @@ app.post('/api/admin/upload-profile-photo', authenticateToken, requireRole(['ADM
       publicUrl = `/uploads/${filename}`;
     }
 
-    // Mise à jour en mémoire
+    // Mise Ã  jour en mÃ©moire
     const pIdx = SERVER_PROFILES.findIndex(p => p.id === profileId);
     if (pIdx !== -1) {
       if (type === 'avatar') {
@@ -1036,13 +1036,13 @@ app.post('/api/admin/upload-profile-photo', authenticateToken, requireRole(['ADM
     }
 
     saveStoreToDisk();
-    recordAudit(user.email, user.role, 'PHOTO_UPLOADED', 'PROFILES', 'SUCCESS', `Photo de ${type} mise à jour pour le profil ${profileId}`);
+    recordAudit(user.email, user.role, 'PHOTO_UPLOADED', 'PROFILES', 'SUCCESS', `Photo de ${type} mise Ã  jour pour le profil ${profileId}`);
 
     res.json({
       success: true,
       url: publicUrl,
       profile: pIdx !== -1 ? SERVER_PROFILES[pIdx] : null,
-      message: `${type === 'avatar' ? 'Photo de profil' : 'Photo de couverture'} enregistrée avec succès.`
+      message: `${type === 'avatar' ? 'Photo de profil' : 'Photo de couverture'} enregistrÃ©e avec succÃ¨s.`
     });
   } catch (err: any) {
     console.error('Erreur sauvegarde photo serveur:', err);
@@ -1058,7 +1058,7 @@ app.put('/api/admin/profiles/:id', authenticateToken, requireRole(['ADMIN', 'EDI
   const idx = SERVER_PROFILES.findIndex(p => p.id === id);
 
   if (idx === -1) {
-    return res.status(404).json({ error: 'Profil non trouvé.' });
+    return res.status(404).json({ error: 'Profil non trouvÃ©.' });
   }
 
   SERVER_PROFILES[idx] = {
@@ -1067,7 +1067,7 @@ app.put('/api/admin/profiles/:id', authenticateToken, requireRole(['ADMIN', 'EDI
     updatedAt: new Date().toISOString().split('T')[0],
   };
 
-  // Si c'est prof-1, synchroniser immédiatement PROFILE_DATA
+  // Si c'est prof-1, synchroniser immÃ©diatement PROFILE_DATA
   if (id === 'prof-1') {
     const fresh = SERVER_PROFILES[idx];
     PROFILE_DATA = {
@@ -1088,9 +1088,9 @@ app.put('/api/admin/profiles/:id', authenticateToken, requireRole(['ADMIN', 'EDI
   }
 
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'PROFILE_UPDATED', 'PROFILES', 'SUCCESS', `Profil mis à jour : ${SERVER_PROFILES[idx].fullName}`);
+  recordAudit(user.email, user.role, 'PROFILE_UPDATED', 'PROFILES', 'SUCCESS', `Profil mis Ã  jour : ${SERVER_PROFILES[idx].fullName}`);
 
-  res.json({ success: true, profile: SERVER_PROFILES[idx], message: 'Profil mis à jour avec succès.' });
+  res.json({ success: true, profile: SERVER_PROFILES[idx], message: 'Profil mis Ã  jour avec succÃ¨s.' });
 });
 
 // Admin delete profile
@@ -1101,13 +1101,13 @@ app.delete('/api/admin/profiles/:id', authenticateToken, requireRole(['ADMIN', '
   const idx = SERVER_PROFILES.findIndex(p => p.id === id);
 
   if (idx === -1) {
-    return res.status(404).json({ error: 'Profil non trouvé.' });
+    return res.status(404).json({ error: 'Profil non trouvÃ©.' });
   }
 
   const deleted = SERVER_PROFILES.splice(idx, 1)[0];
-  recordAudit(user.email, user.role, 'PROFILE_DELETED', 'PROFILES', 'WARNING', `Profil supprimé : ${deleted.fullName}`);
+  recordAudit(user.email, user.role, 'PROFILE_DELETED', 'PROFILES', 'WARNING', `Profil supprimÃ© : ${deleted.fullName}`);
 
-  res.json({ success: true, message: 'Profil supprimé avec succès.' });
+  res.json({ success: true, message: 'Profil supprimÃ© avec succÃ¨s.' });
 });
 
 // ==========================================
@@ -1133,7 +1133,7 @@ app.post('/api/admin/experiences', authenticateToken, requireRole(['ADMIN', 'EDI
   const data = req.body;
 
   if (!data.position || !data.company || !data.startDate) {
-    return res.status(400).json({ error: 'Poste, entreprise et date de début obligatoires.' });
+    return res.status(400).json({ error: 'Poste, entreprise et date de dÃ©but obligatoires.' });
   }
 
   const newExp = {
@@ -1147,9 +1147,9 @@ app.post('/api/admin/experiences', authenticateToken, requireRole(['ADMIN', 'EDI
 
   SERVER_EXPERIENCES.push(newExp);
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'EXPERIENCE_CREATED', 'EXPERIENCES', 'SUCCESS', `Nouvelle expérience ajoutée : ${newExp.position} chez ${newExp.company}`);
+  recordAudit(user.email, user.role, 'EXPERIENCE_CREATED', 'EXPERIENCES', 'SUCCESS', `Nouvelle expÃ©rience ajoutÃ©e : ${newExp.position} chez ${newExp.company}`);
 
-  res.status(201).json({ success: true, experience: newExp, message: 'Expérience créée avec succès.' });
+  res.status(201).json({ success: true, experience: newExp, message: 'ExpÃ©rience crÃ©Ã©e avec succÃ¨s.' });
 });
 
 // Admin update experience
@@ -1160,7 +1160,7 @@ app.put('/api/admin/experiences/:id', authenticateToken, requireRole(['ADMIN', '
   const idx = SERVER_EXPERIENCES.findIndex(e => e.id === id);
 
   if (idx === -1) {
-    return res.status(404).json({ error: 'Expérience non trouvée.' });
+    return res.status(404).json({ error: 'ExpÃ©rience non trouvÃ©e.' });
   }
 
   SERVER_EXPERIENCES[idx] = {
@@ -1169,9 +1169,9 @@ app.put('/api/admin/experiences/:id', authenticateToken, requireRole(['ADMIN', '
   };
 
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'EXPERIENCE_UPDATED', 'EXPERIENCES', 'SUCCESS', `Expérience mise à jour : ${SERVER_EXPERIENCES[idx].position}`);
+  recordAudit(user.email, user.role, 'EXPERIENCE_UPDATED', 'EXPERIENCES', 'SUCCESS', `ExpÃ©rience mise Ã  jour : ${SERVER_EXPERIENCES[idx].position}`);
 
-  res.json({ success: true, experience: SERVER_EXPERIENCES[idx], message: 'Expérience enregistrée avec succès.' });
+  res.json({ success: true, experience: SERVER_EXPERIENCES[idx], message: 'ExpÃ©rience enregistrÃ©e avec succÃ¨s.' });
 });
 
 // Admin delete experience
@@ -1182,14 +1182,14 @@ app.delete('/api/admin/experiences/:id', authenticateToken, requireRole(['ADMIN'
   const idx = SERVER_EXPERIENCES.findIndex(e => e.id === id);
 
   if (idx === -1) {
-    return res.status(404).json({ error: 'Expérience non trouvée.' });
+    return res.status(404).json({ error: 'ExpÃ©rience non trouvÃ©e.' });
   }
 
   const deleted = SERVER_EXPERIENCES.splice(idx, 1)[0];
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'EXPERIENCE_DELETED', 'EXPERIENCES', 'WARNING', `Expérience supprimée : ${deleted.position}`);
+  recordAudit(user.email, user.role, 'EXPERIENCE_DELETED', 'EXPERIENCES', 'WARNING', `ExpÃ©rience supprimÃ©e : ${deleted.position}`);
 
-  res.json({ success: true, message: 'Expérience supprimée avec succès.' });
+  res.json({ success: true, message: 'ExpÃ©rience supprimÃ©e avec succÃ¨s.' });
 });
 
 // ==========================================
@@ -1216,9 +1216,9 @@ app.put('/api/admin/cv-settings', authenticateToken, requireRole(['ADMIN', 'EDIT
   };
 
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'CV_SETTINGS_UPDATED', 'CV_MODULE', 'SUCCESS', `Paramètres du CV mis à jour (Thème : ${SERVER_CV_SETTINGS.themeId})`);
+  recordAudit(user.email, user.role, 'CV_SETTINGS_UPDATED', 'CV_MODULE', 'SUCCESS', `ParamÃ¨tres du CV mis Ã  jour (ThÃ¨me : ${SERVER_CV_SETTINGS.themeId})`);
 
-  res.json({ success: true, settings: SERVER_CV_SETTINGS, message: 'Paramètres du CV enregistrés avec succès.' });
+  res.json({ success: true, settings: SERVER_CV_SETTINGS, message: 'ParamÃ¨tres du CV enregistrÃ©s avec succÃ¨s.' });
 });
 
 // ==========================================
@@ -1245,9 +1245,9 @@ app.put('/api/admin/footer-settings', authenticateToken, requireRole(['ADMIN']),
   };
 
   saveStoreToDisk();
-  recordAudit(user.email, user.role, 'FOOTER_SETTINGS_UPDATED', 'SITE_SETTINGS', 'SUCCESS', 'Paramètres du pied de page public enregistrés.');
+  recordAudit(user.email, user.role, 'FOOTER_SETTINGS_UPDATED', 'SITE_SETTINGS', 'SUCCESS', 'ParamÃ¨tres du pied de page public enregistrÃ©s.');
 
-  res.json({ success: true, settings: SERVER_FOOTER_SETTINGS, message: 'Pied de page mis à jour avec succès.' });
+  res.json({ success: true, settings: SERVER_FOOTER_SETTINGS, message: 'Pied de page mis Ã  jour avec succÃ¨s.' });
 });
 
 // ==========================================
@@ -1263,14 +1263,14 @@ app.get('/api/health', (req: Request, res: Response) => {
 app.post('/api/public/leads', (req: Request, res: Response) => {
   const { name, email, phone, company, service, budget, notes } = req.body;
   if (!name || !phone) {
-    return res.status(400).json({ error: 'Nom et téléphone requis.' });
+    return res.status(400).json({ error: 'Nom et tÃ©lÃ©phone requis.' });
   }
 
   recordAudit(email || 'visiteur', 'PUBLIC', 'LEAD_SUBMISSION', 'PUBLIC_FORM', 'SUCCESS', `Nouveau prospect : ${name} (${service})`);
   res.status(201).json({ 
     success: true, 
     reference: `DEV-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
-    message: 'Votre demande a été enregistrée avec succès.' 
+    message: 'Votre demande a Ã©tÃ© enregistrÃ©e avec succÃ¨s.' 
   });
 });
 
@@ -1278,13 +1278,13 @@ app.post('/api/public/leads', (req: Request, res: Response) => {
 app.post('/api/public/appointments', (req: Request, res: Response) => {
   const { name, email, phone, date, time, subject } = req.body;
   if (!name || !date || !time) {
-    return res.status(400).json({ error: 'Informations incomplètes pour le rendez-vous.' });
+    return res.status(400).json({ error: 'Informations incomplÃ¨tes pour le rendez-vous.' });
   }
 
-  recordAudit(email || 'visiteur', 'PUBLIC', 'APPOINTMENT_BOOKING', 'CALENDAR', 'SUCCESS', `RDV réservé pour ${name} le ${date} à ${time}`);
+  recordAudit(email || 'visiteur', 'PUBLIC', 'APPOINTMENT_BOOKING', 'CALENDAR', 'SUCCESS', `RDV rÃ©servÃ© pour ${name} le ${date} Ã  ${time}`);
   res.status(201).json({ 
     success: true, 
-    message: 'Votre rendez-vous a été enregistré dans le calendrier.' 
+    message: 'Votre rendez-vous a Ã©tÃ© enregistrÃ© dans le calendrier.' 
   });
 });
 
@@ -1323,3 +1323,4 @@ async function setupServer() {
 setupServer().catch(err => {
   console.error('Failed to start server:', err);
 });
+

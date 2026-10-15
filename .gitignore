@@ -6,3 +6,14 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Donnees privees du serveur
+/public/server_data.json
+
+# Donnees privees et sauvegardes locales
+/data/
+server_data*.json
+/public/server_data*.json
+server.ts.backup
+.gitignore.backup
+
