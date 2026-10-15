@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Poppins", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply antialiased text-slate-900 bg-slate-50 transition-colors duration-300;
+  }
+  
+  section {
+    @apply scroll-mt-20;
+  }
+  
+  .dark body {
+    @apply text-slate-100 bg-slate-950;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ================= SCROLL REVEAL ANIMATIONS ================= */
+.scroll-reveal {
+  opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+}
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.fade-in-down {
+  opacity: 0;
+  transform: translateY(-28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.zoom-in {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* Revealed state triggered by IntersectionObserver */
+.scroll-reveal.is-revealed,
+.fade-in-up.is-revealed,
+.fade-in-down.is-revealed,
+.fade-in-left.is-revealed,
+.fade-in-right.is-revealed,
+.zoom-in.is-revealed {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+
+/* Stagger Children Delay */
+.stagger-children > *:nth-child(1) { transition-delay: 0.04s; }
+.stagger-children > *:nth-child(2) { transition-delay: 0.10s; }
+.stagger-children > *:nth-child(3) { transition-delay: 0.16s; }
+.stagger-children > *:nth-child(4) { transition-delay: 0.22s; }
+.stagger-children > *:nth-child(5) { transition-delay: 0.28s; }
+.stagger-children > *:nth-child(6) { transition-delay: 0.34s; }
+.stagger-children > *:nth-child(7) { transition-delay: 0.40s; }
+.stagger-children > *:nth-child(8) { transition-delay: 0.46s; }
+
+/* Parallax section container */
+.parallax-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scroll progress bar indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #6366f1);
+  z-index: 100;
+  transition: width 0.1s ease-out;
+}
+
+/* Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .fade-in-up,
+  .fade-in-down,
+  .fade-in-left,
+  .fade-in-right,
+  .zoom-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .stagger-children > * {
+    transition-delay: 0s !important;
+  }
+}
+
+/* CV Dynamic Theme CSS Variables Defaults */
+:root {
+  --theme-primary: #0f172a;
+  --theme-secondary: #38bdf8;
+  --theme-accent: #2563eb;
+  --theme-bg-card: #f8fafc;
+  --theme-border: #e2e8f0;
+  --theme-text-dark: #1e293b;
+  --theme-text-muted: #64748b;
+  --theme-primary-rgb: 15, 23, 42;
+  --theme-accent-rgb: 37, 99, 235;
+  --theme-secondary-rgb: 56, 189, 248;
+}
+
+@media print {
+  /* Print styling for CV download/print */
+  body {
+    background: #ffffff !important;
+    color: var(--theme-text-dark, #0f172a) !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #cv-printable-area, #cv-printable-area * {
+    visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #cv-printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 24px;
+    background: #ffffff !important;
+    color: var(--theme-text-dark, #0f172a) !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  #cv-printable-area img {
+    max-width: 110px !important;
+    max-height: 110px !important;
+    border-radius: 14px !important;
+    object-fit: cover !important;
+    display: inline-block !important;
+    visibility: visible !important;
+    border-color: var(--theme-accent) !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

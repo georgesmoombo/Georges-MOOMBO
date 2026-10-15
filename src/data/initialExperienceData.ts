@@ -1,0 +1,55 @@
+import { ProfessionalExperience } from '../types/crm';
+
+export const INITIAL_EXPERIENCES: ProfessionalExperience[] = [
+  {
+    id: 'exp-1',
+    position: 'Lead Développeur & Consultant Systèmes d\'Information',
+    company: 'Cabinet Numérique & Indépendant',
+    startDate: '2022-01',
+    endDate: '',
+    isCurrent: true,
+    description: 'Pilotage de la conception et du déploiement d\'architectures logicielles complètes pour entreprises commerciales, industrielles et cabinets de santé à Kinshasa.',
+    achievements: [
+      'Conception de plus de 15 logiciels métiers opérationnels (gestion de stocks, facturation OHADA, caisses POS tactiles)',
+      'Réduction moyenne de 45% des écarts d\'inventaire dès le premier trimestre chez les grossistes clients',
+      'Mise en place de politiques de sauvegarde automatisée 3-2-1 et zéro perte critique de données',
+    ],
+    skills: ['Conception SI (UML)', 'Architecture SI', 'MySQL Avancé', 'React', 'TypeScript', 'PHP MVC', 'Normes OHADA', 'Cybersécurité'],
+    location: 'Kinshasa, RDC & À distance',
+    order: 1,
+  },
+  {
+    id: 'exp-2',
+    position: 'Développeur Full Stack & Gestionnaire de Bases de Données',
+    company: 'Sociétés de Conseil & Distribution',
+    startDate: '2020-03',
+    endDate: '2021-12',
+    isCurrent: false,
+    description: 'Développement d\'outils de gestion interne, automatisation de la facturation bimonétaire (USD/CDF) et fiabilisation des écritures comptables.',
+    achievements: [
+      'Informatisation complète des registres manuels pour 4 réseaux de distribution partenaires',
+      'Création d\'un système d\'édition de factures normalisées avec suivi automatisé des créances clients',
+      'Optimisation des temps de requête SQL sur des tables de plus de 500 000 lignes',
+    ],
+    skills: ['PHP', 'MySQL', 'JavaScript', 'Comptabilité OHADA', 'API REST', 'Excel Avancé / VBA'],
+    location: 'Kinshasa, RDC',
+    order: 2,
+  },
+  {
+    id: 'exp-3',
+    position: 'Technicien Support IT & Formateur Bureautique Décisionnelle',
+    company: 'Services Informatiques & Formation Professionnelle',
+    startDate: '2019-01',
+    endDate: '2020-02',
+    isCurrent: false,
+    description: 'Installation et maintenance de parcs informatiques d\'entreprises, configuration de routeurs et switchs LAN, et formation des équipes de gestion.',
+    achievements: [
+      'Plus de 200 interventions matérielles et logicielles réussies avec un taux de satisfaction client de 96%',
+      'Animation de plus de 30 sessions de formation sur Excel avancé et les tableaux croisés dynamiques pour cadres',
+      'Sécurisation des postes de travail contre les ransomwares et menaces de phishing',
+    ],
+    skills: ['Maintenance Matérielle', 'Réseaux LAN', 'Excel TCD / Formules', 'Sécurité des Postes', 'Pédagogie IT'],
+    location: 'Kinshasa, RDC',
+    order: 3,
+  },
+];
